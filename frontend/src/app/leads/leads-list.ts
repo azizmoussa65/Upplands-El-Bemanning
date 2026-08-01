@@ -72,6 +72,7 @@ export class LeadsList implements OnDestroy {
     finishedAt: Date;
   } | null>(null);
   private pollSub?: { unsubscribe: () => void };
+  private lastRefreshedProcessed = 0;
 
   constructor() {
     const params = this.route.snapshot.queryParamMap;
@@ -132,6 +133,7 @@ export class LeadsList implements OnDestroy {
   private launchScrape(params: ScrapeParams): void {
     this.scraping.set(true);
     this.lastResult.set(null);
+    this.lastRefreshedProcessed = 0;
     this.scrapeProgress.set({ processed: 0, total: null, target: params.maxCompanies ?? null });
 
     this.api.startScrape(params).subscribe({
@@ -157,6 +159,13 @@ export class LeadsList implements OnDestroy {
         next: (job) => {
           const target = this.scrapeProgress()?.target ?? null;
           this.scrapeProgress.set({ processed: job.processed, total: job.total, target });
+
+          // Rafraichit la liste au fur et a mesure (tous les ~10 traites), pas
+          // seulement a la fin, pour voir les leads apparaitre pendant le scraping.
+          if (job.status === 'running' && job.processed - this.lastRefreshedProcessed >= 10) {
+            this.lastRefreshedProcessed = job.processed;
+            this.refresh();
+          }
 
           if (job.status === 'done') {
             this.scraping.set(false);
