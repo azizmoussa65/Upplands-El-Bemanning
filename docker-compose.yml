@@ -1,0 +1,43 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - internal
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - MONGO_URI=mongodb://mongo:27017
+    volumes:
+      - avatar_data:/app/backend/uploads
+    depends_on:
+      - mongo
+    networks:
+      - internal
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - internal
+
+networks:
+  internal:
+
+volumes:
+  mongo_data:
+  avatar_data:
