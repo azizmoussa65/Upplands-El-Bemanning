@@ -1,8 +1,19 @@
+import math
+
 from flask import Blueprint, jsonify
 
 from db import companies_col
 
 dashboard_bp = Blueprint("dashboard", __name__)
+
+
+def _clean_num(value):
+    """Un NaN passe tel quel par MongoDB mais casse le JSON renvoye au
+    navigateur (JSON.parse rejette le litteral NaN). Filet de securite en
+    plus du fix a la source dans pipeline.to_number()."""
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    return value
 
 
 @dashboard_bp.get("/summary")
@@ -14,7 +25,8 @@ def summary():
             [{"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$revenue", 0]}}}}]
         )
     )
-    total_revenue = revenue_agg[0]["total"] if revenue_agg else 0
+    total_revenue = _clean_num(revenue_agg[0]["total"]) if revenue_agg else 0
+    total_revenue = total_revenue or 0
 
     with_contact = companies_col.count_documents(
         {"$or": [{"bestEmail": {"$nin": [None, ""]}}, {"bestPhone": {"$nin": [None, ""]}}]}
@@ -29,7 +41,7 @@ def summary():
         .limit(10)
     )
     top_revenue = [
-        {"id": str(d["_id"]), "name": d.get("name"), "revenue": d.get("revenue"), "status": d.get("status")}
+        {"id": str(d["_id"]), "name": d.get("name"), "revenue": _clean_num(d.get("revenue")), "status": d.get("status")}
         for d in top_revenue_docs
     ]
 
@@ -41,7 +53,7 @@ def summary():
         .limit(10)
     )
     priority_to_call = [
-        {"id": str(d["_id"]), "name": d.get("name"), "aiScore": d.get("aiScore"), "revenue": d.get("revenue")}
+        {"id": str(d["_id"]), "name": d.get("name"), "aiScore": d.get("aiScore"), "revenue": _clean_num(d.get("revenue"))}
         for d in to_call_docs
     ]
 

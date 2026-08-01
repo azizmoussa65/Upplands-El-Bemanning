@@ -26,6 +26,7 @@ EXEMPLES:
 """
 
 import argparse
+import math
 import re
 import sys
 import time
@@ -159,7 +160,10 @@ def is_generic_email(email):
 
 
 def to_number(value):
-    """Convertit revenue/employees (parfois '1-4') en float, ou None."""
+    """Convertit revenue/employees (parfois '1-4') en float, ou None.
+    Un NaN pandas/numpy en entree donnerait sinon un NaN en sortie (str(nan)
+    -> 'nan' -> float('nan') ne leve pas d'exception), ce qui corrompt ensuite
+    toute somme MongoDB ($sum) et casse le JSON renvoye au frontend."""
     if value is None:
         return None
     s = str(value).strip()
@@ -167,9 +171,10 @@ def to_number(value):
         return None
     s = s.split("-")[0].strip().replace(" ", "")
     try:
-        return float(s)
+        result = float(s)
     except ValueError:
         return None
+    return None if math.isnan(result) else result
 
 
 # =============================================================================

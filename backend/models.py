@@ -1,3 +1,4 @@
+import math
 from datetime import datetime, timezone
 
 from bson import ObjectId
@@ -5,6 +6,13 @@ from bson.errors import InvalidId
 from flask_login import UserMixin
 
 from db import campaigns_col, companies_col, email_sends_col, settings_col, users_col
+
+
+def _clean_num(value):
+    """NaN passe la validation Mongo mais rend le JSON invalide cote navigateur."""
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    return value
 
 
 def to_object_id(raw_id):
@@ -113,8 +121,8 @@ def company_to_dict(doc, include_call_logs=False):
         "name": doc.get("name"),
         "contactPersonName": doc.get("contactPersonName"),
         "contactPersonRole": doc.get("contactPersonRole"),
-        "revenue": doc.get("revenue"),
-        "employees": doc.get("employees"),
+        "revenue": _clean_num(doc.get("revenue")),
+        "employees": _clean_num(doc.get("employees")),
         "county": doc.get("county"),
         "municipality": doc.get("municipality"),
         "bestEmail": doc.get("bestEmail"),
