@@ -1,0 +1,98 @@
+<h1>Users</h1>
+<p class="muted">Everyone with access to this platform, and their color used across leads and campaigns.</p>
+
+<div class="table-wrapper">
+  <table mat-table [dataSource]="users()" class="users-table">
+    <ng-container matColumnDef="avatar">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let user">
+        <button
+          type="button"
+          class="avatar-button"
+          (click)="avatarInput.click()"
+          [disabled]="uploadingId() === user.id"
+          title="Change photo"
+        >
+          @if (user.avatarUrl) {
+            <img [src]="user.avatarUrl" [alt]="user.username" class="avatar-img" />
+          } @else {
+            <span class="avatar-initials" [style.background]="user.color">{{ initials(user) }}</span>
+          }
+        </button>
+        <input
+          #avatarInput
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          hidden
+          (change)="onAvatarSelected(user, $event)"
+        />
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="color">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let user">
+        <input
+          type="color"
+          [value]="user.color"
+          (change)="updateColor(user, $any($event.target).value)"
+          class="color-swatch"
+        />
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="username">
+      <th mat-header-cell *matHeaderCellDef>Username</th>
+      <td mat-cell *matCellDef="let user">
+        {{ user.username }}
+        @if (user.username === auth.username()) {
+          <span class="muted small">(you)</span>
+        }
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef>Email</th>
+      <td mat-cell *matCellDef="let user">{{ user.email || '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let user">
+        <button mat-icon-button (click)="deleteUser(user)" [disabled]="users().length <= 1" aria-label="Delete">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+  </table>
+</div>
+
+<mat-card class="card new-user-card">
+  <h2>Add a user</h2>
+  <form class="new-user-form" (ngSubmit)="createUser()">
+    <mat-form-field appearance="outline">
+      <mat-label>Username</mat-label>
+      <input matInput [(ngModel)]="newUsername" name="newUsername" required />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Password</mat-label>
+      <input matInput type="password" [(ngModel)]="newPassword" name="newPassword" required />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput [(ngModel)]="newEmail" name="newEmail" placeholder="for Reply-To on campaigns" />
+    </mat-form-field>
+
+    <label class="color-field">
+      Color
+      <input type="color" [(ngModel)]="newColor" name="newColor" />
+    </label>
+
+    <button mat-flat-button color="primary" type="submit" [disabled]="creating()">Add user</button>
+  </form>
+</mat-card>

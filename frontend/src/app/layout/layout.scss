@@ -1,0 +1,66 @@
+.shell {
+  height: 100vh;
+}
+
+.sidenav {
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 16px;
+
+  img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+
+    strong {
+      font-size: 0.95rem;
+    }
+
+    span {
+      font-size: 0.75rem;
+      color: var(--text-muted, rgba(0, 0, 0, 0.6));
+    }
+  }
+}
+
+.active {
+  background: rgba(26, 95, 180, 0.1);
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--card-bg, white);
+  border-bottom: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user {
+  margin-right: 8px;
+  font-size: 0.9rem;
+  color: var(--text-secondary, rgba(0, 0, 0, 0.7));
+}
+
+.content {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}

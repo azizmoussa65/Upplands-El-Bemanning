@@ -1,0 +1,86 @@
+
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// according to the Material 3 design spec. Included twice, scoped to two different
+// selectors, so light and dark generate their own complete, correct token sets -
+// simply overriding a couple of --mat-sys-* variables is not enough for Material 3,
+// most tokens are independently generated per theme-type at build time.
+// Learn more at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+
+  // Couleur de marque par defaut, remplacee dynamiquement (voir auth.service.ts)
+  // par la couleur choisie pour l'utilisateur connecte, des la connexion.
+  --user-color: #4f52e5;
+  --mat-sys-primary: var(--user-color);
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: color-mix(in srgb, var(--user-color) 20%, white);
+  --mat-sys-on-primary-container: color-mix(in srgb, var(--user-color) 70%, black);
+
+  // Tokens semantiques utilises par nos propres composants (au lieu de rgba(0,0,0,x)
+  // en dur), pour que le mode sombre les inverse correctement.
+  --text-secondary: rgba(0, 0, 0, 0.7);
+  --text-muted: rgba(0, 0, 0, 0.58);
+  --text-faint: rgba(0, 0, 0, 0.4);
+  --surface-hover: rgba(0, 0, 0, 0.04);
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --card-bg: #ffffff;
+  --card-bg-alt: #fafafa;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+
+  @include mat.theme((
+    color: (
+      theme-type: dark,
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+
+  --mat-sys-primary: var(--user-color);
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: color-mix(in srgb, var(--user-color) 30%, black);
+  --mat-sys-on-primary-container: color-mix(in srgb, var(--user-color) 85%, white);
+
+  --text-secondary: rgba(255, 255, 255, 0.75);
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --text-faint: rgba(255, 255, 255, 0.42);
+  --surface-hover: rgba(255, 255, 255, 0.07);
+  --border-subtle: rgba(255, 255, 255, 0.14);
+  --card-bg: #1e1e27;
+  --card-bg-alt: #23232e;
+}
+
+body {
+  // Le mode (light/dark) est pilote manuellement via l'attribut [data-theme] sur
+  // <html> (voir theme.service.ts), pas par les preferences systeme.
+  color-scheme: light;
+
+  // Set a default background, font and text colors for the application using
+  // Angular Material's system-level CSS variables. Learn more about these
+  // variables at https://material.angular.dev/guide/system-variables
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  // Reset the user agent margin.
+  margin: 0;
+}
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

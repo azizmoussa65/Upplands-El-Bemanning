@@ -1,0 +1,213 @@
+@if (loading()) {
+  <div class="loading"><mat-spinner diameter="32"></mat-spinner></div>
+} @else if (lead(); as lead) {
+  <a routerLink="/leads" class="back-link"><mat-icon>arrow_back</mat-icon> Back to leads</a>
+
+  <div class="page-header">
+    <div>
+      <h1>{{ lead.name }}</h1>
+      <p class="muted">{{ lead.municipality }}, {{ lead.county }} &middot; {{ lead.industryName }}</p>
+    </div>
+
+    <div class="header-actions">
+      <mat-form-field appearance="outline" class="status-select">
+        <mat-label>Assigned to</mat-label>
+        <mat-select [ngModel]="lead.assignedUserId" (ngModelChange)="assignTo($event)">
+          <mat-option [value]="null">Unassigned</mat-option>
+          @for (u of users(); track u.id) {
+            <mat-option [value]="u.id">
+              <span class="color-dot" [style.background]="u.color"></span>
+              {{ u.username }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="status-select">
+        <mat-label>Status</mat-label>
+        <mat-select [ngModel]="lead.status" (ngModelChange)="changeStatus($event)">
+          @for (s of statuses; track s) {
+            <mat-option [value]="s">{{ statusLabels[s] }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      @if (lead.emailStatus === 'replied') {
+        <mat-chip class="replied-chip"><mat-icon inline="true">check</mat-icon> Replied</mat-chip>
+      } @else if (lead.emailStatus === 'emailed') {
+        <button mat-stroked-button (click)="markReplied()" [disabled]="markingReplied()">
+          Mark as replied
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="grid">
+    <mat-card class="card">
+      <h2>Contact</h2>
+      <dl>
+        <dt>Mobile</dt>
+        <dd class="mobile-value">
+          @if (lead.mobile) {
+            <a [href]="'tel:' + lead.mobile"><mat-icon inline="true">smartphone</mat-icon> {{ lead.mobile }}</a>
+          } @else { — }
+        </dd>
+        <dt>Email</dt>
+        <dd>{{ lead.bestEmail || '—' }}</dd>
+        <dt>Phone</dt>
+        <dd>{{ lead.bestPhone || '—' }}</dd>
+        <dt>Manager</dt>
+        <dd>{{ lead.contactPersonName || '—' }} <span class="muted">{{ lead.contactPersonRole }}</span></dd>
+        <dt>Website</dt>
+        <dd>
+          @if (lead.foundWebsite) {
+            <a [href]="lead.foundWebsite" target="_blank" rel="noopener">{{ lead.foundWebsite }}</a>
+          } @else { — }
+        </dd>
+      </dl>
+    </mat-card>
+
+    <mat-card class="card">
+      <h2>Company</h2>
+      <dl>
+        <dt>Org. number</dt>
+        <dd>{{ lead.orgnr || '—' }}</dd>
+        <dt>Revenue</dt>
+        <dd>{{ formatRevenue(lead.revenue) }}</dd>
+        <dt>Employees</dt>
+        <dd>{{ lead.employees ?? '—' }}</dd>
+        <dt>SNI code</dt>
+        <dd>{{ lead.sniCode ? (lead.sniCode + ' ' + (lead.sniName || '')) : '—' }}</dd>
+      </dl>
+    </mat-card>
+
+    <mat-card class="card ai-card">
+      <div class="ai-header">
+        <h2>AI recommendation</h2>
+        <button mat-stroked-button (click)="recommend()" [disabled]="recommending()">
+          @if (recommending()) {
+            <mat-spinner diameter="18"></mat-spinner>
+          } @else {
+            <ng-container>
+              <mat-icon>bolt</mat-icon>
+              Generate
+            </ng-container>
+          }
+        </button>
+      </div>
+
+      @if (lead.aiRecommendation) {
+        <p class="ai-recommendation" [class.call]="lead.aiRecommendation === 'call'">
+          {{ lead.aiRecommendation }} @if (lead.aiScore !== null) { — score {{ lead.aiScore }}/100 }
+        </p>
+        <p class="ai-reason">{{ lead.aiReason }}</p>
+      } @else {
+        <p class="muted">No recommendation yet. A Groq API key is required (Settings page).</p>
+      }
+    </mat-card>
+  </div>
+
+  @if (lead.financials && lead.financials.length) {
+    <mat-card class="card">
+      <h2>Bokslut &amp; Nyckeltal</h2>
+
+      <div class="key-figures-row">
+        <div class="key-figure">
+          <span class="kf-value">{{ formatPercent(lead.keyFigures?.soliditet) }}</span>
+          <span class="kf-label">Soliditet</span>
+        </div>
+        <div class="key-figure">
+          <span class="kf-value">{{ formatPercent(lead.keyFigures?.vinstmarginal) }}</span>
+          <span class="kf-label">Vinstmarginal</span>
+        </div>
+        <div class="key-figure">
+          <span class="kf-value">{{ formatPercent(lead.keyFigures?.kassalikviditet) }}</span>
+          <span class="kf-label">Kassalikviditet</span>
+        </div>
+        @if (revenueGrowth() !== null) {
+          <div class="key-figure">
+            <span class="kf-value" [class.positive]="revenueGrowth()! >= 0" [class.negative]="revenueGrowth()! < 0">
+              {{ revenueGrowth()! >= 0 ? '+' : '' }}{{ formatPercent(revenueGrowth()) }}
+            </span>
+            <span class="kf-label">Revenue YoY</span>
+          </div>
+        }
+      </div>
+
+      <canvas baseChart [data]="financialsChartData()" [options]="financialsChartOptions" type="bar"></canvas>
+
+      <div class="table-wrapper">
+        <table class="bokslut-table">
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Omsättning</th>
+              <th>Resultat e. finansnetto</th>
+              <th>EBITDA</th>
+              <th>Årets resultat</th>
+              <th>Summa tillgångar</th>
+              <th>Eget kapital</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (y of lead.financials; track y.year) {
+              <tr>
+                <td>{{ y.year }}</td>
+                <td>{{ formatRevenue(y.revenue) }}</td>
+                <td>{{ formatRevenue(y.resultEfterFinansnetto) }}</td>
+                <td>{{ formatRevenue(y.ebitda) }}</td>
+                <td>{{ formatRevenue(y.aretsResultat) }}</td>
+                <td>{{ formatRevenue(y.summaTillgangar) }}</td>
+                <td>{{ formatRevenue(y.egetKapital) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="muted small">Belopp i 1000 SEK, source: allabolag.se</p>
+    </mat-card>
+  }
+
+  <mat-card class="card">
+    <h2>Call history</h2>
+
+    <form class="note-form" (ngSubmit)="addNote()">
+      <mat-form-field appearance="outline" class="grow">
+        <mat-label>Note</mat-label>
+        <textarea matInput [(ngModel)]="note" name="note" rows="2" required></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Outcome</mat-label>
+        <mat-select [(ngModel)]="outcome" name="outcome">
+          @for (o of outcomes; track o.value) {
+            <mat-option [value]="o.value">{{ o.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Date</mat-label>
+        <input matInput type="datetime-local" [(ngModel)]="callDate" name="callDate" />
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" type="submit">Add</button>
+    </form>
+
+    <mat-divider></mat-divider>
+
+    <div class="call-logs">
+      @for (log of lead.callLogs; track log.id) {
+        <div class="call-log">
+          <div class="call-log-header">
+            <span class="outcome">{{ outcomeLabel(log.outcome) }}</span>
+            <span class="muted small">{{ log.callDate | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <p>{{ log.note }}</p>
+        </div>
+      } @empty {
+        <p class="muted">No calls logged yet.</p>
+      }
+    </div>
+  </mat-card>
+}

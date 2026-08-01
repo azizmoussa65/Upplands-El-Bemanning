@@ -1,0 +1,16 @@
+.scrape-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 320px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.hint {
+  font-size: 0.78rem;
+  color: var(--text-muted, rgba(0, 0, 0, 0.55));
+  margin: -6px 0 4px;
+}

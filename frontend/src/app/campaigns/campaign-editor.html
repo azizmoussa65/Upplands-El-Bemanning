@@ -1,0 +1,89 @@
+<a routerLink="/campaigns" class="back-link"><mat-icon>arrow_back</mat-icon> Back to campaigns</a>
+
+<h1>New campaign</h1>
+
+<div class="grid">
+  <mat-card class="card">
+    <h2>Message</h2>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Campaign name</mat-label>
+      <input matInput [(ngModel)]="name" name="name" placeholder="e.g. Nya kunder" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Subject</mat-label>
+      <input matInput [(ngModel)]="subject" name="subject" placeholder="e.g. Inhyrning av elektriker" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Body (HTML)</mat-label>
+      <textarea matInput [(ngModel)]="body" name="body" rows="10"></textarea>
+    </mat-form-field>
+    <p class="hint">
+      Variables: <code>{{ '{{name}}' }}</code> (contact person), <code>{{ '{{company}}' }}</code>,
+      <code>{{ '{{county}}' }}</code>, <code>{{ '{{municipality}}' }}</code>
+    </p>
+  </mat-card>
+
+  <div class="side-column">
+    <mat-card class="card">
+      <h2>Recipients</h2>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Region</mat-label>
+        <mat-select [(ngModel)]="county" name="county" (selectionChange)="previewRecipients()">
+          <mat-option value="">All</mat-option>
+          @for (c of counties(); track c) {
+            <mat-option [value]="c">{{ c }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="status" name="status" (selectionChange)="previewRecipients()">
+          <mat-option value="">All</mat-option>
+          @for (s of statuses; track s) {
+            <mat-option [value]="s">{{ statusLabels[s] }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Name contains</mat-label>
+        <input matInput [(ngModel)]="search" name="search" (change)="previewRecipients()" />
+      </mat-form-field>
+
+      @if (recipientCount() !== null) {
+        <p class="recipient-count">
+          <mat-icon inline="true">groups</mat-icon>
+          {{ recipientCount() }} matching leads (with email, not yet called, not unsubscribed)
+        </p>
+      }
+    </mat-card>
+
+    <mat-card class="card">
+      <h2>Follow-up cadence</h2>
+      <p class="hint">Sent automatically to leads who haven't replied yet.</p>
+      @for (days of followUps; track $index) {
+        <div class="followup-row">
+          <span>Follow-up {{ $index + 1 }}: after</span>
+          <mat-form-field appearance="outline" class="days-field">
+            <input matInput type="number" [(ngModel)]="followUps[$index]" [name]="'followup' + $index" min="1" />
+          </mat-form-field>
+          <span>days</span>
+          <button mat-icon-button (click)="removeFollowUp($index)" aria-label="Remove">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
+      <button mat-stroked-button (click)="addFollowUp()">
+        <mat-icon>add</mat-icon>
+        Add follow-up
+      </button>
+    </mat-card>
+
+    <button mat-flat-button color="primary" class="full-width save-button" (click)="save()" [disabled]="saving()">
+      Save campaign
+    </button>
+  </div>
+</div>

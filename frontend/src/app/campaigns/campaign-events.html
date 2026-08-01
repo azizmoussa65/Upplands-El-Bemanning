@@ -1,0 +1,42 @@
+<a [routerLink]="['/campaigns', campaignId]" class="back-link"><mat-icon>arrow_back</mat-icon> Back</a>
+
+<h1>{{ title() }}</h1>
+
+<div class="table-wrapper">
+  <table mat-table [dataSource]="rows()" class="events-table">
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef>Email</th>
+      <td mat-cell *matCellDef="let row">{{ row.email }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="clicks">
+      <th mat-header-cell *matHeaderCellDef>Klick</th>
+      <td mat-cell *matCellDef="let row">{{ row.clicks }} st</td>
+    </ng-container>
+
+    <ng-container matColumnDef="opens">
+      <th mat-header-cell *matHeaderCellDef>Öppningar</th>
+      <td mat-cell *matCellDef="let row">{{ row.opens }} st</td>
+    </ng-container>
+
+    <ng-container matColumnDef="companyName">
+      <th mat-header-cell *matHeaderCellDef>Namn</th>
+      <td mat-cell *matCellDef="let row">{{ row.companyName || '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="lastEventAt">
+      <th mat-header-cell *matHeaderCellDef>Senaste händelse</th>
+      <td mat-cell *matCellDef="let row">{{ row.lastEventAt ? (row.lastEventAt | date: 'yyyy-MM-dd') : '—' }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+  </table>
+
+  @if (rows().length === 0) {
+    <div class="empty-state">
+      <mat-icon>inbox</mat-icon>
+      <p>Nothing here yet.</p>
+    </div>
+  }
+</div>

@@ -1,0 +1,100 @@
+@if (loading()) {
+  <div class="loading"><mat-spinner diameter="32"></mat-spinner></div>
+} @else if (campaign(); as c) {
+  <a routerLink="/campaigns" class="back-link"><mat-icon>arrow_back</mat-icon> Back to campaigns</a>
+
+  <div class="page-header">
+    <div>
+      <h1>{{ c.name }}</h1>
+      <p class="muted">{{ c.subject }}</p>
+    </div>
+    @if (c.status === 'draft') {
+      <button mat-flat-button color="primary" (click)="launch()" [disabled]="launching()">
+        <mat-icon>send</mat-icon>
+        Launch campaign
+      </button>
+    } @else {
+      <mat-chip [class]="'status-' + c.status">{{ c.status }}</mat-chip>
+    }
+  </div>
+
+  <div class="stat-cards">
+    <mat-card class="stat">
+      <mat-icon>outbox</mat-icon>
+      <div class="stat-value">{{ c.stats.sent }}</div>
+      <div class="stat-label">Skickade</div>
+    </mat-card>
+    <mat-card class="stat">
+      <mat-icon>inbox</mat-icon>
+      <div class="stat-value">{{ c.stats.delivered }}</div>
+      <div class="stat-label">Levererade</div>
+    </mat-card>
+    <mat-card class="stat clickable" routerLink="opens">
+      <mat-icon>drafts</mat-icon>
+      <div class="stat-value">{{ c.stats.opened }}</div>
+      <div class="stat-label">Öppnade</div>
+    </mat-card>
+    <mat-card class="stat clickable" routerLink="clicks">
+      <mat-icon>ads_click</mat-icon>
+      <div class="stat-value">{{ c.stats.clicked }}</div>
+      <div class="stat-label">Klick</div>
+    </mat-card>
+    <mat-card class="stat">
+      <mat-icon>unsubscribe</mat-icon>
+      <div class="stat-value">{{ c.stats.unsubscribed }}</div>
+      <div class="stat-label">Avregistrerade</div>
+    </mat-card>
+    <mat-card class="stat">
+      <mat-icon>error_outline</mat-icon>
+      <div class="stat-value">{{ c.stats.bounced }}</div>
+      <div class="stat-label">Studsade</div>
+    </mat-card>
+  </div>
+
+  <div class="rates">
+    <div class="rate-block">
+      <div class="rate-header">
+        <span>Öppnade</span>
+        <span>{{ openRate() }}%</span>
+      </div>
+      <div class="rate-bar"><div class="rate-fill open" [style.width.%]="openRate()"></div></div>
+    </div>
+    <div class="rate-block">
+      <div class="rate-header">
+        <span>Klickfrekvens</span>
+        <span>{{ clickRate() }}%</span>
+      </div>
+      <div class="rate-bar"><div class="rate-fill click" [style.width.%]="clickRate()"></div></div>
+    </div>
+  </div>
+
+  <mat-card class="card">
+    <h2>Message</h2>
+    <dl>
+      <dt>Subject</dt>
+      <dd>{{ c.subject }}</dd>
+    </dl>
+    <div class="body-preview" [innerHTML]="c.body"></div>
+  </mat-card>
+
+  <mat-card class="card">
+    <h2>Recipients</h2>
+    <dl>
+      <dt>Region</dt>
+      <dd>{{ c.recipientFilter.county || 'All' }}</dd>
+      <dt>Status</dt>
+      <dd>{{ c.recipientFilter.status || 'All' }}</dd>
+      <dt>Follow-up cadence</dt>
+      <dd>
+        @if (c.followUpCadence.length) {
+          {{ c.followUpCadence.length }} follow-up(s):
+          @for (step of c.followUpCadence; track $index) {
+            +{{ step.afterDays }}d{{ !$last ? ',' : '' }}
+          }
+        } @else {
+          None configured
+        }
+      </dd>
+    </dl>
+  </mat-card>
+}

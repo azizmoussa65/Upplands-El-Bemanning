@@ -1,0 +1,8 @@
+flask
+flask-login
+flask-cors
+pymongo
+requests
+pandas
+beautifulsoup4
+openpyxl

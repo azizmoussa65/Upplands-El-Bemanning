@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+*.egg-info/
+
+# Backend runtime artifacts
+backend/out.log
+backend/err.log
+backend/uploads/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/out.log
+frontend/err.log
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+
+# Secrets (none should exist in-repo, but just in case)
+.env
+*.env.local
+
+# Scraped data exports / scratch files (not source code)
+*.xlsx
+~$*.xlsx
+logo1.png

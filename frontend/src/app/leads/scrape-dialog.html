@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>New lead search</h2>
+
+<mat-dialog-content class="scrape-form">
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Industry code (e.g. 10002498 = Elinstallationer)</mat-label>
+    <input matInput [(ngModel)]="industryCode" name="industryCode" placeholder="e.g. 10002498" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Search term / name keyword (optional)</mat-label>
+    <input matInput [(ngModel)]="query" name="query" placeholder="e.g. elektriker" />
+  </mat-form-field>
+  <p class="hint">
+    Use this to search by name or keyword (e.g. "elektriker") instead of, or together
+    with, the industry code above.
+  </p>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Region (county)</mat-label>
+    <input matInput [(ngModel)]="county" name="county" placeholder="e.g. Stockholm" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Max companies to retrieve</mat-label>
+    <input matInput type="number" [(ngModel)]="maxCompanies" name="maxCompanies" min="1" />
+  </mat-form-field>
+  <p class="hint">
+    allabolag.se doesn't filter by region server-side: the search pages through results
+    until it finds this many companies in the chosen region (or runs out of results). The
+    higher this number, the longer the search can take.
+  </p>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Page limit (optional, advanced)</mat-label>
+    <input matInput type="number" [(ngModel)]="pages" name="pages" min="1" placeholder="unlimited" />
+  </mat-form-field>
+
+  <mat-slide-toggle [(ngModel)]="noEnrich" name="noEnrich">
+    Scrape only (skip looking up emails/phone numbers)
+  </mat-slide-toggle>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="launch()">Start</button>
+</mat-dialog-actions>

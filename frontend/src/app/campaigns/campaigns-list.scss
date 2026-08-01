@@ -1,0 +1,71 @@
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+
+  h1 {
+    margin: 0 0 4px;
+  }
+}
+
+.muted {
+  color: var(--text-muted, rgba(0, 0, 0, 0.6));
+  margin: 0;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  background: var(--card-bg, white);
+  border-radius: 8px;
+}
+
+.campaigns-table {
+  width: 100%;
+}
+
+.clickable-row {
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-hover, rgba(0, 0, 0, 0.03));
+  }
+}
+
+.color-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.status-draft {
+  background: #e5e5e5 !important;
+}
+
+.status-sending {
+  background: #cfe3fb !important;
+  color: var(--user-color, #4f52e5) !important;
+}
+
+.status-sent {
+  background: #d5f0dc !important;
+  color: #1e5631 !important;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 60px 20px;
+  color: var(--text-muted, rgba(0, 0, 0, 0.5));
+
+  mat-icon {
+    font-size: 40px;
+    height: 40px;
+    width: 40px;
+  }
+}

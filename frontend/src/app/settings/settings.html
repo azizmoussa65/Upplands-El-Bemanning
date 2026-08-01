@@ -1,0 +1,116 @@
+<h1>{{ i18n.t('settings.title') }}</h1>
+<p class="muted">{{ i18n.t('settings.subtitle') }}</p>
+
+<mat-card class="card">
+  <h2>{{ i18n.t('settings.appearance') }}</h2>
+
+  <div class="appearance-row">
+    <span class="appearance-label">{{ i18n.t('settings.theme') }}</span>
+    <mat-button-toggle-group [value]="theme.mode()" (change)="theme.set($event.value)">
+      <mat-button-toggle value="light">
+        <mat-icon inline="true">light_mode</mat-icon> {{ i18n.t('settings.light') }}
+      </mat-button-toggle>
+      <mat-button-toggle value="dark">
+        <mat-icon inline="true">dark_mode</mat-icon> {{ i18n.t('settings.dark') }}
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <div class="appearance-row">
+    <span class="appearance-label">{{ i18n.t('settings.language') }}</span>
+    <mat-button-toggle-group [value]="i18n.lang()" (change)="i18n.setLang($event.value)">
+      <mat-button-toggle value="en">English</mat-button-toggle>
+      <mat-button-toggle value="sv">Svenska</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+</mat-card>
+
+<mat-card class="card">
+  <h2>API keys</h2>
+  <p class="hint">
+    <mat-icon>info</mat-icon>
+    Leave the field as-is (masked) to keep the existing key. Fill it in to change it.
+  </p>
+
+  <form (ngSubmit)="saveSettings()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Serper.dev API key (website lookup)</mat-label>
+      <input matInput [(ngModel)]="settings.serperApiKey" name="serperApiKey" autocomplete="off" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Groq API key (AI recommendation)</mat-label>
+      <input matInput [(ngModel)]="settings.groqApiKey" name="groqApiKey" autocomplete="off" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Default industry code</mat-label>
+      <input matInput [(ngModel)]="settings.defaultIndustryCode" name="defaultIndustryCode" placeholder="e.g. 10002498" />
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" type="submit" [disabled]="saving()">{{ i18n.t('settings.save') }}</button>
+  </form>
+</mat-card>
+
+<mat-card class="card">
+  <h2>Email campaigns (Brevo)</h2>
+  <p class="hint">
+    <mat-icon>info</mat-icon>
+    Needed to send campaign emails and track opens/clicks/bounces. Sender email must be a
+    verified sender in your Brevo account.
+  </p>
+
+  <form (ngSubmit)="saveSettings()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Brevo API key</mat-label>
+      <input matInput [(ngModel)]="settings.brevoApiKey" name="brevoApiKey" autocomplete="off" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Sender email</mat-label>
+      <input matInput [(ngModel)]="settings.senderEmail" name="senderEmail" placeholder="e.g. sales@upplandsel.se" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Sender name</mat-label>
+      <input matInput [(ngModel)]="settings.senderName" name="senderName" placeholder="e.g. Upplands El & Bemanning" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Public site URL</mat-label>
+      <input matInput [(ngModel)]="settings.publicBaseUrl" name="publicBaseUrl" placeholder="e.g. https://leads.upplandsel.se" />
+    </mat-form-field>
+    <p class="hint">
+      <mat-icon>info</mat-icon>
+      Used to build the unsubscribe link added to campaign emails. Leave empty while testing
+      locally — no unsubscribe link is added until this is set.
+    </p>
+
+    <button mat-flat-button color="primary" type="submit" [disabled]="saving()">{{ i18n.t('settings.save') }}</button>
+  </form>
+
+  @if (settings.webhookPath) {
+    <p class="hint webhook-hint">
+      <mat-icon>link</mat-icon>
+      Set this as the transactional webhook URL in your Brevo account (for delivered/opened/
+      clicked/bounced/unsubscribed tracking): <code>{{ webhookUrl() }}</code>
+    </p>
+  }
+</mat-card>
+
+<mat-card class="card">
+  <h2>Change password</h2>
+  <form (ngSubmit)="changePassword()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Current password</mat-label>
+      <input matInput type="password" [(ngModel)]="currentPassword" name="currentPassword" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>New password</mat-label>
+      <input matInput type="password" [(ngModel)]="newPassword" name="newPassword" />
+    </mat-form-field>
+
+    <button mat-stroked-button type="submit" [disabled]="changingPassword()">Update</button>
+  </form>
+</mat-card>

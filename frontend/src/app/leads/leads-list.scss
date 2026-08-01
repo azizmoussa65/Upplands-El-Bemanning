@@ -1,0 +1,153 @@
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+
+  h1 {
+    margin: 0 0 4px;
+  }
+}
+
+.muted {
+  color: var(--text-muted, rgba(0, 0, 0, 0.6));
+  margin: 0;
+}
+
+.small {
+  font-size: 0.78rem;
+}
+
+.color-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.scrape-progress {
+  margin-bottom: 16px;
+
+  span {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+  }
+}
+
+.scrape-result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  background: #d5f0dc;
+  border-radius: 8px;
+  font-size: 0.9rem;
+
+  .ok {
+    color: #1e5631;
+  }
+
+  span {
+    flex: 1;
+  }
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.table-wrapper {
+  background: var(--card-bg, white);
+  border-radius: 12px;
+  overflow: auto;
+  box-shadow: 0 1px 3px var(--border-subtle, rgba(0, 0, 0, 0.08));
+}
+
+.leads-table {
+  width: 100%;
+}
+
+.lead-name {
+  font-weight: 500;
+  text-decoration: none;
+  color: inherit;
+}
+
+.mobile-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  color: var(--user-color, #4f52e5);
+  text-decoration: none;
+
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.clickable-row {
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(26, 95, 180, 0.04);
+  }
+}
+
+.ai-call {
+  background: #d5f0dc !important;
+  color: #1e5631 !important;
+}
+
+.ai-skip {
+  background: #f2e2e2 !important;
+  color: #7a2b2b !important;
+}
+
+.status-nouveau {
+  background: #e3edf7 !important;
+}
+.status-a_appeler {
+  background: #fdeecb !important;
+}
+.status-appele {
+  background: #e5e5e5 !important;
+}
+.status-interesse {
+  background: #d5f0dc !important;
+}
+.status-pas_interesse {
+  background: #f2e2e2 !important;
+}
+.status-gagne {
+  background: #cfe8ff !important;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 16px;
+  color: var(--text-muted, rgba(0, 0, 0, 0.5));
+
+  mat-icon {
+    font-size: 40px;
+    height: 40px;
+    width: 40px;
+    margin-bottom: 8px;
+  }
+}
