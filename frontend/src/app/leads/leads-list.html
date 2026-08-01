@@ -82,6 +82,11 @@
 
 <div class="table-wrapper">
   <table mat-table [dataSource]="leads()" class="leads-table">
+    <ng-container matColumnDef="index">
+      <th mat-header-cell *matHeaderCellDef>#</th>
+      <td mat-cell *matCellDef="let lead; let i = index" class="muted small">{{ i + 1 }}</td>
+    </ng-container>
+
     <ng-container matColumnDef="date">
       <th mat-header-cell *matHeaderCellDef>Added</th>
       <td mat-cell *matCellDef="let lead">

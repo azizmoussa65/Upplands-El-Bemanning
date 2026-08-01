@@ -50,7 +50,7 @@ export class LeadsList implements OnDestroy {
 
   readonly statusLabels = LEAD_STATUS_LABELS;
   readonly statuses = Object.keys(LEAD_STATUS_LABELS) as LeadStatus[];
-  readonly columns = ['date', 'name', 'mobile', 'contact', 'revenue', 'employees', 'ai', 'status'];
+  readonly columns = ['index', 'date', 'name', 'mobile', 'contact', 'revenue', 'employees', 'ai', 'status'];
 
   leads = signal<Lead[]>([]);
   counties = signal<string[]>([]);
