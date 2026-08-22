@@ -1,6 +1,7 @@
 import math
 
 from flask import Blueprint, jsonify
+from flask_login import login_required
 
 from db import companies_col
 
@@ -17,6 +18,7 @@ def _clean_num(value):
 
 
 @dashboard_bp.get("/summary")
+@login_required
 def summary():
     total_leads = companies_col.count_documents({})
 

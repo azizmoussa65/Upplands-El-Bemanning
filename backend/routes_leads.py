@@ -19,6 +19,7 @@ OUTCOME_TO_STATUS = {
 
 
 @leads_bp.get("")
+@login_required
 def list_leads():
     query = {}
 
@@ -48,12 +49,14 @@ def list_leads():
 
 
 @leads_bp.get("/counties")
+@login_required
 def list_counties():
     counties = [c for c in companies_col.distinct("county") if c]
     return jsonify(sorted(counties))
 
 
 @leads_bp.get("/<lead_id>")
+@login_required
 def get_lead(lead_id):
     oid = to_object_id(lead_id)
     doc = companies_col.find_one({"_id": oid}) if oid else None

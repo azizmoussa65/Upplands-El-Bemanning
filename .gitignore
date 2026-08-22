@@ -28,3 +28,4 @@ Thumbs.db
 *.xlsx
 ~$*.xlsx
 logo1.png
+nginx_access_dump.log
